@@ -26,7 +26,31 @@ class Board:
         return not (n in self.get_row(*pos) or
                     n in self.get_col(*pos) or
                     n in self.get_square(*pos))
+
+    def get_empty(self):
+        for r in range(9):
+            for c in range(9):
+                if self.board[r][c] == '.':
+                    return (r, c)
+    
+    def solve(self):
+        current = self.get_empty()
+        if current is None:
+            return True
+        else:
+            r, c = current
         
+        for i in range(1, 10):
+            v = str(i)
+            if self.is_valid(v, current):
+                self.board[r][c] = v
+                if self.solve():
+                    return True
+                else:
+                    self.board[r][c] = '.'
+        
+        return False
+
 
     def getSolution(self) -> str:
         solution = [''.join(row) for row in self.board]
@@ -51,6 +75,10 @@ def solve(initial):
 
     board = Board(initial)
     print(board)
+    print('\nSolution:')
+    board.solve()
+    print(board)
+
     return board.getSolution()
 
 if __name__ == '__main__':
