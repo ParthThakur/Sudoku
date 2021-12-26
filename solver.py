@@ -22,6 +22,11 @@ class Board:
 
         return [v for s in square for v in s]
 
+    def is_valid(self, n, pos):
+        return not (n in self.get_row(*pos) or
+                    n in self.get_col(*pos) or
+                    n in self.get_square(*pos))
+        
 
     def getSolution(self) -> str:
         solution = [''.join(row) for row in self.board]
