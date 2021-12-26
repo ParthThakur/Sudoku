@@ -27,13 +27,25 @@ class Board:
         solution = [''.join(row) for row in self.board]
         return ''.join(solution)
 
+    def __repr__(self) -> str:
+        r = [' '.join(row) for row in self.board]
+        rows = []
+
+        for index, row in enumerate(r):
+            rows.append(f'{row[:6]} {row[6:12]} {row[12:]}')
+            if index in [2, 5]:
+                rows.append(' ' * 18)
+
+        b = "\n".join(rows)
+        return str(b)
+
 
 def solve(initial):
     if len(initial) != 81:
         raise ValueError('Invalid Board. Must contain 81 values.')
 
     board = Board(initial)
-    print(board.get_square(1,6))
+    print(board)
     return board.getSolution()
 
 if __name__ == '__main__':
