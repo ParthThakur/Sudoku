@@ -79,7 +79,11 @@ def solve(initial):
     board.solve()
     print(board)
 
-    return board.getSolution()
+    solution = board.getSolution()
+    if '.' in solution:
+        return 'Invalid Board. No solution.'
+    
+    return solution
 
 if __name__ == '__main__':
     initial_values = input('Enter initial values: ')
