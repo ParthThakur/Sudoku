@@ -3,26 +3,51 @@ from itertools import combinations_with_replacement
 import time
 
 
+class Cell:
+
+    def __init__(self, value):
+        self.possible_values = set() if value == '.' else None
+        self.value = value
+        
+    def __repr__(self):
+        return f'{self.value}'
+    
+    def __eq__(self, other):
+        if isinstance(other, Cell):
+            return self.value == other.value
+        if isinstance(other, str):
+            return self.value == other
+
+        return False
+    
+    def __len__(self):
+        return len(self.value)
+
+    def __hash__(self) -> int:
+        return hash(self.value)
+
+
 class Board:
 
     def __init__(self, initial) -> None:
         rows = re.findall('.{9}', initial)
-        self.board = [list(row) for row in rows]
+        rows = [list(v) for v in rows]
+        self.board = []
+        for row in rows:
+            self.board.append([Cell(v) for v in row])
 
     def get_row(self, x, y):
-        row = self.board[x]
-        return [v for r in row for v in r]
+        return self.board[x]
 
     def get_col(self, x, y):
-        col = [b[y] for b in self.board]
-        return [v for c in col for v in c]
+        return [b[y] for b in self.board]
 
     def get_square(self, x, y):
         a = x // 3
         b = y // 3
         square = [s[3*b:3+3*b] for s in self.board[3*a:3+3*a]]
 
-        return [v for s in square for v in s]
+        return [c for v in square for c in v]
 
     def is_valid(self, n, pos):
         return not (n in self.get_row(*pos) or
@@ -60,21 +85,21 @@ class Board:
         for i in range(1, 10):
             v = str(i)
             if self.is_valid(v, current):
-                self.board[r][c] = v
+                self.board[r][c].value = v
                 if self._solve():
                     return True
                 else:
-                    self.board[r][c] = '.'
+                    self.board[r][c].value = '.'
         
         return False
 
 
     def getSolution(self) -> str:
-        solution = [''.join(row) for row in self.board]
+        solution = [''.join([v.value for v in row]) for row in self.board]
         return ''.join(solution)
 
     def __repr__(self) -> str:
-        r = [' '.join(row) for row in self.board]
+        r = [' '.join([v.value for v in row]) for row in self.board]
         rows = []
 
         for index, row in enumerate(r):
