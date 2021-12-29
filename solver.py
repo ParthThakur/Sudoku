@@ -4,8 +4,10 @@ import time
 
 
 class Cell:
+    '''A single cell in the board.'''
 
     def __init__(self, value):
+        # Set of all possible values the cell may take.
         self.possible_values = set() if value == '.' else None
         self.value = value
         
@@ -28,8 +30,10 @@ class Cell:
 
 
 class Board:
+    '''The sudoku board.'''
 
     def __init__(self, initial) -> None:
+        # Create the board from input string.
         rows = re.findall('.{9}', initial)
         rows = [list(v) for v in rows]
         self.board = []
@@ -37,12 +41,15 @@ class Board:
             self.board.append([Cell(v) for v in row])
 
     def get_row(self, x, y):
+        # Return the row of given position.
         return self.board[x]
 
     def get_col(self, x, y):
+        # Return column of given position.
         return [b[y] for b in self.board]
 
     def get_square(self, x, y):
+        # Return square (9x9 subgrid) for given position.
         a = x // 3
         b = y // 3
         square = [s[3*b:3+3*b] for s in self.board[3*a:3+3*a]]
@@ -50,17 +57,20 @@ class Board:
         return [c for v in square for c in v]
 
     def is_valid(self, n, pos):
+        # Check if value at given position breakes any rules for Sudoku.
         return not (n in self.get_row(*pos) or
                     n in self.get_col(*pos) or
                     n in self.get_square(*pos))
 
     def get_empty(self):
+        # Return first empty position.
         for r in range(9):
             for c in range(9):
                 if self.board[r][c] == '.':
                     return (r, c)
 
     def get_all(self):
+        # Iterator to get all cells in a row, column or square if the cell is not empty.
         for i in range(9):
             yield [v for v  in self.get_row(i, i) if v != '.']
             yield [v for v  in self.get_col(i, i) if v != '.']
@@ -69,6 +79,9 @@ class Board:
             yield [v for v  in self.get_square(*pos) if v != '.']
 
     def solve(self):
+        '''Solve the puzzle.'''
+
+        # Check if input is valid.
         for values in self.get_all():
             if len(values) != len(set(values)):
                 return False
@@ -76,6 +89,7 @@ class Board:
         return self._solve()
     
     def _solve(self):
+        '''Use backtracking to solve the puzzle.'''
         current = self.get_empty()
         if current is None:
             return True
@@ -95,10 +109,12 @@ class Board:
 
 
     def getSolution(self) -> str:
+        '''Solution as single string format.'''
         solution = [''.join([v.value for v in row]) for row in self.board]
         return ''.join(solution)
 
     def __repr__(self) -> str:
+        '''Prints the board in a readable format.'''
         r = [' '.join([v.value for v in row]) for row in self.board]
         rows = []
 
@@ -113,6 +129,7 @@ class Board:
 
 def solve(initial):
     if len(initial) != 81:
+        # Error if input length is not 81.
         raise ValueError('Invalid Board. Must contain 81 values.')
 
     board = Board(initial)
