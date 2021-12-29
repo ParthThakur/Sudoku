@@ -1,5 +1,6 @@
 import re
 from itertools import combinations_with_replacement
+import time
 
 
 class Board:
@@ -91,14 +92,19 @@ def solve(initial):
 
     board = Board(initial)
     print(board)
+
+    start = time.process_time()
     solved = board.solve()
+    end = time.process_time()
 
     if solved:
         print('\nSolution:')
         print(board)
+        print(f'Solution found in {end - start:.2f} seconds.')
         return board.getSolution()
         
     print('Invalid Board. No solution.')
+    print(f'Process took {end - start:.2f} seconds.')
     return 'Invalid Board. No solution.'
 
     
