@@ -3,8 +3,23 @@ class Cell:
 
     def __init__(self, value):
         # Set of all possible values the cell may take.
-        self.possible_values = set() if value == '.' else None
+        self.possible_values = set()
+        self.orig_possible_values = set()
         self.value = value
+        self.immutable = value != '.'
+
+    def remove(self, value):
+        try:
+            if value == '.':
+                self.possible_values.remove(value)
+                if len(self.possible_values) == 1:
+                    self.value = self.possible_values.pop()
+        except KeyError:
+            return
+
+    def revert(self):
+        self.value = '.'
+        self.possible_values = {v for v in self.orig_possible_values}
         
     def __repr__(self):
         return f'{self.value}'

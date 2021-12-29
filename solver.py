@@ -1,6 +1,7 @@
 import re
 from itertools import combinations_with_replacement
 import time
+from typing import Tuple
 from Cell import Cell
 
 
@@ -33,16 +34,19 @@ class Board:
 
     def is_valid(self, n, pos):
         # Check if value at given position breakes any rules for Sudoku.
+        n = str(n)
         return not (n in self.get_row(*pos) or
                     n in self.get_col(*pos) or
                     n in self.get_square(*pos))
 
-    def get_empty(self):
+    def get_empty(self) -> Cell:
         # Return first empty position.
         for r in range(9):
             for c in range(9):
                 if self.board[r][c] == '.':
-                    return (r, c)
+                    return self.board[r][c], (r, c)
+        
+        return None, None
 
     def get_all(self):
         # Iterator to get all cells in a row, column or square if the cell is not empty.
@@ -53,6 +57,16 @@ class Board:
         for pos in combinations_with_replacement([0, 3, 6], 2):
             yield [v for v  in self.get_square(*pos) if v != '.']
 
+    def get_neighbors(self, current, pos):
+        neighbors = []
+        neighbors += self.get_col(*pos)
+        neighbors += self.get_square(*pos)
+        neighbors += self.get_row(*pos)
+        
+        for cell in neighbors:
+            if cell is not current:
+                yield cell
+
     def solve(self):
         '''Solve the puzzle.'''
 
@@ -60,25 +74,37 @@ class Board:
         for values in self.get_all():
             if len(values) != len(set(values)):
                 return False
+
+        # Set possible values for each cell:
+        for row, values in enumerate(self.board):
+            for col, cell in enumerate(values):
+                if cell.possible_values is not None:
+                    for i in range(1, 10):
+                        if self.is_valid(i, (row, col)):
+                            cell.possible_values.add(str(i))
+                            cell. orig_possible_values.add(str(i))
+                        
         
         return self._solve()
     
     def _solve(self):
         '''Use backtracking to solve the puzzle.'''
-        current = self.get_empty()
+        current, pos = self.get_empty()
         if current is None:
             return True
-        else:
-            r, c = current
         
-        for i in range(1, 10):
+        for i in current.possible_values.copy():
             v = str(i)
-            if self.is_valid(v, current):
-                self.board[r][c].value = v
+            if self.is_valid(v, pos):
+                current.value = v
+                neighbors = [cell for cell in self.get_neighbors(current, pos)]
+                for cell in neighbors:
+                    cell.remove(v)
+
                 if self._solve():
                     return True
                 else:
-                    self.board[r][c].value = '.'
+                    current.revert()
         
         return False
 
