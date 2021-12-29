@@ -1,4 +1,5 @@
 import re
+from itertools import combinations_with_replacement
 
 
 class Board:
@@ -32,8 +33,23 @@ class Board:
             for c in range(9):
                 if self.board[r][c] == '.':
                     return (r, c)
-    
+
+    def get_all(self):
+        for i in range(9):
+            yield [v for v  in self.get_row(i, i) if v != '.']
+            yield [v for v  in self.get_col(i, i) if v != '.']
+        
+        for pos in combinations_with_replacement([0, 3, 6], 2):
+            yield [v for v  in self.get_square(*pos) if v != '.']
+
     def solve(self):
+        for values in self.get_all():
+            if len(values) != len(set(values)):
+                return False
+        
+        return self._solve()
+    
+    def _solve(self):
         current = self.get_empty()
         if current is None:
             return True
@@ -44,7 +60,7 @@ class Board:
             v = str(i)
             if self.is_valid(v, current):
                 self.board[r][c] = v
-                if self.solve():
+                if self._solve():
                     return True
                 else:
                     self.board[r][c] = '.'
@@ -75,16 +91,19 @@ def solve(initial):
 
     board = Board(initial)
     print(board)
-    print('\nSolution:')
-    board.solve()
-    print(board)
+    solved = board.solve()
 
-    solution = board.getSolution()
-    if '.' in solution:
-        return 'Invalid Board. No solution.'
+    if solved:
+        print('\nSolution:')
+        print(board)
+        return board.getSolution()
+        
+    print('Invalid Board. No solution.')
+    return 'Invalid Board. No solution.'
+
     
-    return solution
 
 if __name__ == '__main__':
     initial_values = input('Enter initial values: ')
     solve(initial_values)
+
