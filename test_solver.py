@@ -26,16 +26,6 @@ class TestSolver(unittest.TestCase):
 
         self.assertEqual(solver.solve(board), solution)
 
-    def test_multiple_solutions(self):
-        self.assertEqual(solver.solve('.................................................................................'),
-                        'Invalid Board. Too many solutions.')
-        self.assertEqual(solver.solve('........................................1........................................'),
-                        'Invalid Board. Too many solutions.')
-        self.assertEqual(solver.solve('...........5....9...4....1.2....3.5....7.....438...2......9.....1.4...6..........'),
-                        'Invalid Board. Too many solutions.')
-        self.assertEqual(solver.solve('...3165..8..5..1...1.89724.9.1.85.2....9.1....4.263..1.5.....1.1..4.9..2..61.8...'),
-                        'Invalid Board. Too many solutions.')
-
     def test_invalid_puzzle(self):
         self.assertEqual(solver.solve('..9.7...5..21..9..1...28....7...5..1..851.....5....3.......3..68........21.....87'),
                         'Invalid Board. No solution.')
